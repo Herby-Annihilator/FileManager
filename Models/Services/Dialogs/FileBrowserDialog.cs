@@ -1,0 +1,33 @@
+﻿using FileManager.Models.Services.Interfaces;
+using System;
+using Microsoft.Win32;
+using System.Collections.Generic;
+using System.Text;
+
+namespace FileManager.Models.Services.Dialogs
+{
+	public class FileBrowserDialog : IDialog
+	{
+		private string _parentDirectory = Environment.CurrentDirectory;
+		public string ParentDirectory { get => _parentDirectory; set => _parentDirectory = value; }
+		private string _selectedPath = "";
+		public string SelectedPath { get => _selectedPath; set => _selectedPath = value; }
+		public string[] SelectedFiles { get; private set; } = new string[0];
+		public bool ShowDialog()
+		{
+			OpenFileDialog dialog = new OpenFileDialog();
+			dialog.Multiselect = true;
+			if (dialog.ShowDialog() == true)
+			{
+				SelectedFiles = dialog.FileNames;
+				SelectedPath = SelectedFiles[0].Substring(0, SelectedFiles[0].LastIndexOf("\\") + 1);
+				for (int i = 0; i < SelectedFiles.Length; i++)
+				{
+					SelectedFiles[i] = SelectedFiles[i].Substring(SelectedFiles[i].LastIndexOf("\\") + 1);
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+}
