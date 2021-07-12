@@ -4,8 +4,8 @@ using System.Text;
 
 namespace FileManager.Models.Services.Interfaces
 {
-	public interface IRule
+	public interface IRule<T>
 	{
-		bool Apply();
+		T Apply(T param);
 	}
 }
