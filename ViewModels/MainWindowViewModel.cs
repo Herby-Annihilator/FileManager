@@ -10,6 +10,7 @@ using FileManager.Models.Services.Interfaces;
 using System.Collections.ObjectModel;
 using FileManager.Models.Data;
 using System.IO;
+using FileManager.Models.Services.FileRules;
 
 namespace FileManager.ViewModels
 {
@@ -21,6 +22,7 @@ namespace FileManager.ViewModels
 			ChooseFolderCommand = new LambdaCommand(OnChooseFolderCommandExecuted, CanChooseFolderCommandExecute);
 			LoadDataCommand = new LambdaCommand(OnLoadDataCommandExecuted, CanLoadDataCommandExecute);
 			ClearTableCommand = new LambdaCommand(OnClearTableCommandExecuted, CanClearTableCommandExecute);
+			ApplyToAllCommand = new LambdaCommand(OnApplyToAllCommandExecuted, CanApplyToAllCommandExecute);
 		}
 		#region Properties
 		private string _title = "Title";
@@ -94,6 +96,48 @@ namespace FileManager.ViewModels
 
 		private bool _sparseFile = false;
 		public bool SparseFile { get => _sparseFile; set => Set(ref _sparseFile, value); }
+
+		private bool _renameOnly = true;
+		public bool RenameOnly { get => _renameOnly; set => Set(ref _renameOnly, value); }
+
+		private bool _renameAndReplace = false;
+		public bool RenameAndReplace { get => _renameAndReplace; set => Set(ref _renameAndReplace, value); }
+
+		private bool _saveRegister = true;
+		public bool SaveRegister 
+		{ 
+			get => _saveRegister;
+			set
+			{
+				UpperCase = false;
+				LowerCase = false;
+				Set(ref _saveRegister, value);
+			}
+		}
+
+		private bool _changeRegister = false;
+		public bool ChangeRegister 
+		{ 
+			get => _changeRegister;
+			set
+			{
+				Set(ref _changeRegister, value);
+				UpperCase = ChangeRegister;
+				LowerCase = false;				
+			} 
+		}
+
+		private bool _upperCase = false;
+		public bool UpperCase { get => _upperCase; set => Set(ref _upperCase, value); }
+
+		private bool _lowerCase = false;
+		public bool LowerCase { get => _lowerCase; set => Set(ref _lowerCase, value); }
+
+		private bool _limit = false;
+		public bool Limit { get => _limit; set => Set(ref _limit, value); }
+
+		private string _logText = "";
+		public string LogText { get => _logText; set => Set(ref _logText, value); }
 		#endregion
 		#endregion
 
@@ -112,6 +156,16 @@ namespace FileManager.ViewModels
 		private bool CanChooseFolderCommandExecute(object p) => true;
 		#endregion
 
+
+		#region ApplyToAllCommand
+		public ICommand ApplyToAllCommand { get; }
+		private void OnApplyToAllCommandExecuted(object p)
+		{
+			FileRule rule = new ChangeNameRule(null);
+			 
+		}
+		private bool CanApplyToAllCommandExecute(object p) => FilesTable.Count > 0;
+		#endregion
 		#region LoadDataCommand
 		public ICommand LoadDataCommand { get; }
 		private void OnLoadDataCommandExecuted(object p)

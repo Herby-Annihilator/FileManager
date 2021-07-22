@@ -45,21 +45,21 @@
                     <GroupBox Header="Манипуляции с файлами">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
                             <StackPanel>
-                                <RadioButton Content="Переименовать" IsChecked="True"/>
-                                <RadioButton Content="Переместить и переименовать"/>
-                                <TextBox Text="Путь" Margin="0,5"/>
+                                <RadioButton Content="Переименовать" IsChecked="{Binding RenameOnly}"/>
+                                <RadioButton Content="Переместить и переименовать" IsChecked="{Binding RenameAndReplace}"/>
+                                <TextBox Text="Путь" Margin="0,5" IsEnabled="{Binding RenameAndReplace}"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <CheckBox Content="Ограничить до"/>
-                                    <TextBox Width="25" Margin="5,0"/>
+                                    <CheckBox Content="Ограничить до" IsChecked="{Binding Limit}"/>
+                                    <TextBox Width="25" Margin="5,0" IsEnabled="{Binding Limit}"/>
                                     <TextBlock Text="символов"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Margin="5,0">
-                                <RadioButton Content="Сохранить регистр" IsChecked="True"/>
-                                <RadioButton Content="Не сохранять регистр"/>
+                                <RadioButton Content="Сохранить регистр" IsChecked="{Binding SaveRegister}"/>
+                                <RadioButton Content="Не сохранять регистр" IsChecked="{Binding ChangeRegister}"/>
                                 <StackPanel Margin="15,0,0,0">
-                                    <RadioButton Content="Верхний"/>
-                                    <RadioButton Content="Нижний"/>
+                                    <RadioButton Content="Верхний" IsChecked="{Binding UpperCase}" IsEnabled="{Binding ChangeRegister}"/>
+                                    <RadioButton Content="Нижний" IsChecked="{Binding LowerCase}" IsEnabled="{Binding ChangeRegister}"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -70,7 +70,7 @@
                     </StackPanel>
                     <TextBlock Text="Лог операций"/>
                 </StackPanel>
-                <RichTextBox Margin="5" IsReadOnly="True"/>
+                <TextBox Margin="5" IsReadOnly="True" Text="{Binding LogText}" TextWrapping="Wrap" AcceptsReturn="True"/>
             </DockPanel>
             <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="BlueViolet"/>
             <DockPanel Grid.Column="2" Margin="5">
