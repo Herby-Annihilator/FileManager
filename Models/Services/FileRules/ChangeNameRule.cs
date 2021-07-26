@@ -8,19 +8,17 @@ namespace FileManager.Models.Services.FileRules
 	public class ChangeNameRule : FileRule
 	{
 		private string _fileName;
-		public ChangeNameRule(FileRule rule, string fileName = null)
+		public ChangeNameRule(string fileName)
 		{
-			this.rule = rule;
 			_fileName = fileName;
 		}
 		public override string Apply(string param)
 		{
-			string result = rule.Apply(param);
 			Dictionary<string, string> table = GetTranslationTable();
 			string res = "";
-			for (int i = 0; i < result.Length; i++)
+			for (int i = 0; i < param.Length; i++)
 			{
-				res += table[result[i].ToString()];
+				res += table[param[i].ToString()];
 			}
 			return res;
 		}
