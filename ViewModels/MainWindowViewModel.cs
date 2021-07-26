@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using FileManager.Models.Data;
 using System.IO;
 using FileManager.Models.Services.FileRules;
+using FileManager.Models.Services;
 
 namespace FileManager.ViewModels
 {
@@ -19,11 +20,16 @@ namespace FileManager.ViewModels
 	{
 		public MainWindowViewModel()
 		{
+			_services = new ServiceLocator();
 			ChooseFolderCommand = new LambdaCommand(OnChooseFolderCommandExecuted, CanChooseFolderCommandExecute);
 			LoadDataCommand = new LambdaCommand(OnLoadDataCommandExecuted, CanLoadDataCommandExecute);
 			ClearTableCommand = new LambdaCommand(OnClearTableCommandExecuted, CanClearTableCommandExecute);
 			ApplyToAllCommand = new LambdaCommand(OnApplyToAllCommandExecuted, CanApplyToAllCommandExecute);
+			ApplyToSelectedCommand = new LambdaCommand(OnApplyToSelectedCommandExecuted, CanApplyToSelectedCommandExecute);
 		}
+
+		private ServiceLocator _services;
+
 		#region Properties
 		private string _title = "Title";
 		public string Title { get => _title; set => Set(ref _title, value); }
@@ -52,6 +58,12 @@ namespace FileManager.ViewModels
 				}				
 			}
 		}
+
+		private string _pathToTranslateFile = "Путь";
+		public string PathToTranslateFile { get => _pathToTranslateFile; set => Set(ref _pathToTranslateFile, value); }
+
+		private string _pathToAnotherFolder = "Путь";
+		public string PathToAnotherFolder { get => _pathToAnotherFolder; set => Set(ref _pathToAnotherFolder, value); }
 
 		#region FileAttributesCheckboxes
 		private bool _archived = false;
@@ -97,15 +109,33 @@ namespace FileManager.ViewModels
 		private bool _sparseFile = false;
 		public bool SparseFile { get => _sparseFile; set => Set(ref _sparseFile, value); }
 
+		#endregion
+
+		#region RadioButtons
+
 		private bool _renameOnly = true;
-		public bool RenameOnly { get => _renameOnly; set => Set(ref _renameOnly, value); }
+		public bool RenameOnly
+		{
+			get => _renameOnly;
+			set
+			{
+				Set(ref _renameOnly, value);
+			}
+		}
 
 		private bool _renameAndReplace = false;
-		public bool RenameAndReplace { get => _renameAndReplace; set => Set(ref _renameAndReplace, value); }
+		public bool RenameAndReplace
+		{
+			get => _renameAndReplace;
+			set
+			{
+				Set(ref _renameAndReplace, value);
+			}
+		}
 
 		private bool _saveRegister = true;
-		public bool SaveRegister 
-		{ 
+		public bool SaveRegister
+		{
 			get => _saveRegister;
 			set
 			{
@@ -116,15 +146,15 @@ namespace FileManager.ViewModels
 		}
 
 		private bool _changeRegister = false;
-		public bool ChangeRegister 
-		{ 
+		public bool ChangeRegister
+		{
 			get => _changeRegister;
 			set
 			{
 				Set(ref _changeRegister, value);
 				UpperCase = ChangeRegister;
-				LowerCase = false;				
-			} 
+				LowerCase = false;
+			}
 		}
 
 		private bool _upperCase = false;
@@ -136,9 +166,21 @@ namespace FileManager.ViewModels
 		private bool _limit = false;
 		public bool Limit { get => _limit; set => Set(ref _limit, value); }
 
+		private bool _useDefaultTranslator = true;
+		public bool UseDefaultTranslator { get => _useDefaultTranslator; set => Set(ref _useDefaultTranslator, value); }
+
+		private bool _useTranslatorFromFile = false;
+		public bool UseTranslatorFromFile { get => _useTranslatorFromFile; set => Set(ref _useTranslatorFromFile, value); }
+
+		#endregion
+
+
+		private int _limitLength = 10;
+		public int LimitLength { get => _limitLength; set => Set(ref _limitLength, value); }
+
 		private string _logText = "";
 		public string LogText { get => _logText; set => Set(ref _logText, value); }
-		#endregion
+
 		#endregion
 
 		#region Commands
@@ -161,11 +203,21 @@ namespace FileManager.ViewModels
 		public ICommand ApplyToAllCommand { get; }
 		private void OnApplyToAllCommandExecuted(object p)
 		{
-			FileRule rule = new ChangeNameRule(null);
+			
 			 
 		}
 		private bool CanApplyToAllCommandExecute(object p) => FilesTable.Count > 0;
 		#endregion
+
+		#region ApplyToSelectedCommand
+		public ICommand ApplyToSelectedCommand { get; }
+		private void OnApplyToSelectedCommandExecuted(object p)
+		{
+			IRuleExecutor<string> ruleExecutor = ConfigureExecutor();
+		}
+		private bool CanApplyToSelectedCommandExecute(object p) => SelectedFile != null;
+		#endregion
+
 		#region LoadDataCommand
 		public ICommand LoadDataCommand { get; }
 		private void OnLoadDataCommandExecuted(object p)
@@ -257,6 +309,22 @@ namespace FileManager.ViewModels
 			NoScrubData = false;
 			Offline = false;
 			SparseFile = false;
+		}
+
+		private IRuleExecutor<string> ConfigureExecutor()
+		{
+			IRuleExecutor<string> ruleExecutor = _services.FileRuleExecutor;
+			if (UpperCase)
+				ruleExecutor.Add(new UpperCaseRule());
+			if (LowerCase)
+				ruleExecutor.Add(new LowerCaseRule());
+			if (Limit)
+				ruleExecutor.Add(new LimitFileNameLengthRule(LimitLength));
+			if (UseDefaultTranslator)
+				ruleExecutor.Add(new DefaultTranslateRule());
+			else
+				ruleExecutor.Add(new TranslateRule(PathToTranslateFile));
+			return ruleExecutor;
 		}
 	}
 }

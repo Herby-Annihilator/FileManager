@@ -6,10 +6,9 @@ using System.Text;
 
 namespace FileManager.Models.Services
 {
-	public static class ServicesRegistrator
+	public class ServiceLocator
 	{
-		public static IServiceCollection AddServices(this IServiceCollection services) => services.AddSingleton<FileRuleExecutor>()
-		// Register your services here
-		;
+		public FileRuleExecutor FileRuleExecutor => App.Services.GetRequiredService<FileRuleExecutor>();
+		
 	}
 }

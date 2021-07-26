@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileManager"
+        xmlns:cv="clr-namespace:FileManager.Infrastructure.Converters"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}">
@@ -47,11 +48,19 @@
                             <StackPanel>
                                 <RadioButton Content="Переименовать" IsChecked="{Binding RenameOnly}"/>
                                 <RadioButton Content="Переместить и переименовать" IsChecked="{Binding RenameAndReplace}"/>
-                                <TextBox Text="Путь" Margin="0,5" IsEnabled="{Binding RenameAndReplace}"/>
+                                <TextBox Text="{Binding PathToAnotherFolder, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" IsEnabled="{Binding RenameAndReplace}"/>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox Content="Ограничить до" IsChecked="{Binding Limit}"/>
-                                    <TextBox Width="25" Margin="5,0" IsEnabled="{Binding Limit}"/>
+                                    <TextBox Text="{Binding LimitLength, UpdateSourceTrigger=PropertyChanged, Converter={cv:IntToStringConverter}}" Width="25" Margin="5,0" IsEnabled="{Binding Limit}"/>
                                     <TextBlock Text="символов"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,5,0,0">
+                                    <RadioButton Content="Использовать встроенный транслятор" IsChecked="{Binding UseDefaultTranslator}"/>
+                                    <RadioButton Content="Загрузить из файла" Margin="0,5,0,0" IsChecked="{Binding UseTranslatorFromFile}"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox Text="{Binding PathToTranslateFile, UpdateSourceTrigger=PropertyChanged}" Width="180" IsEnabled="{Binding UseTranslatorFromFile}"/>
+                                        <Button Content="Обзор" Margin="5,0,0,0" Width="45"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Margin="5,0">
@@ -65,8 +74,8 @@
                         </StackPanel>
                     </GroupBox>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5">
-                        <Button Content="Применить ко всем" Margin="5, 0"/>
-                        <Button Content="Применить к выбранному"/>
+                        <Button Content="Применить ко всем" Margin="5, 0" Command="{Binding ApplyToAllCommand}"/>
+                        <Button Content="Применить к выбранному" Command="{Binding ApplyToSelectedCommand}"/>
                     </StackPanel>
                     <TextBlock Text="Лог операций"/>
                 </StackPanel>

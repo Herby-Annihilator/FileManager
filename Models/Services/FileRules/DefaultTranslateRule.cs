@@ -5,13 +5,8 @@ using System.IO;
 
 namespace FileManager.Models.Services.FileRules
 {
-	public class ChangeNameRule : FileRule
+	public class DefaultTranslateRule : FileRule
 	{
-		private string _fileName;
-		public ChangeNameRule(string fileName)
-		{
-			_fileName = fileName;
-		}
 		public override string Apply(string param)
 		{
 			Dictionary<string, string> table = GetTranslationTable();
@@ -23,42 +18,9 @@ namespace FileManager.Models.Services.FileRules
 			return res;
 		}
 
-		/// <summary>
-		/// Возвращает транслирующую таблицу. Формат файла:
-		/// 'ключ=значение' в столбец без кавычек
-		/// </summary>
-		/// <returns></returns>
-		private Dictionary<string, string> GetTranslationTable()
-		{
-			if (_fileName == null)
-			{
-				return GetDefaultTable();
-			}
-			else
-			{
-				Dictionary<string, string> result = new Dictionary<string, string>();
-				StreamReader reader = new StreamReader(_fileName);
-				string[] reports = reader.ReadToEnd().Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-				string[] keyValue;
-				try
-				{
-					for (int i = 0; i < reports.Length; i++)
-					{
-						keyValue = reports[i].Split("=", StringSplitOptions.RemoveEmptyEntries);
-						result.Add(keyValue[0], keyValue[1]);
-					}
-				}
-				catch(Exception)
-				{
-					reader.Close();
-					throw new InvalidDataException($"Неверный формат данных в файле {_fileName}");
-				}				
-				reader.Close();
-				return result;
-			}
-		}
+		protected virtual Dictionary<string, string> GetTranslationTable() => GetDefaultTable();
 
-		private Dictionary<string, string> GetDefaultTable()
+		protected virtual Dictionary<string, string> GetDefaultTable()
 		{
 			Dictionary<string, string> result = new Dictionary<string, string>
 			{
