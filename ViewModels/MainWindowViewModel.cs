@@ -214,6 +214,14 @@ namespace FileManager.ViewModels
 		private void OnApplyToSelectedCommandExecuted(object p)
 		{
 			IRuleExecutor<string> ruleExecutor = ConfigureExecutor();
+			string res;
+			res = ruleExecutor.Invoke(SelectedFile.Location + SelectedFile.Name);
+			File.Move(SelectedFile.Location + SelectedFile.Name, res);
+			LogText += $"Файл '{SelectedFile.Location + SelectedFile.Name}' переименован в '{res}'\r\n";
+			int index = FilesTable.IndexOf(SelectedFile);
+			SelectedFile = null;
+			FilesTable[index].Location = res.Substring(0, res.LastIndexOf("\\") + 1);
+			FilesTable[index].Name = res.Substring(res.LastIndexOf("\\") + 1);
 		}
 		private bool CanApplyToSelectedCommandExecute(object p) => SelectedFile != null;
 		#endregion

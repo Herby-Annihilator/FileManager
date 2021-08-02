@@ -32,12 +32,16 @@ namespace FileManager.Models.Services.Executors
 
 		public string Invoke(string param)
 		{
-			string result = param;
+			string directory, name, ext;
+			directory = param.Substring(0, param.LastIndexOf("\\") + 1);
+			ext = param.Substring(param.LastIndexOf('.'));
+			name = param.Substring(directory.Length, 
+				param.Length - directory.Length - ext.Length);			
 			foreach (var rule in rules)
 			{
-				rule.Apply(result);
+				name = rule.Apply(name);
 			}
-			return result;
+			return directory + name + ext;
 		}
 	}
 }

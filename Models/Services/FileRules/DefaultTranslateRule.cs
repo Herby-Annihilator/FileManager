@@ -13,7 +13,9 @@ namespace FileManager.Models.Services.FileRules
 			string res = "";
 			for (int i = 0; i < param.Length; i++)
 			{
-				res += table[param[i].ToString()];
+				if (!table.TryGetValue(param[i].ToString(), out string value))
+					value = "_";
+				res += value;
 			}
 			return res;
 		}
@@ -90,6 +92,7 @@ namespace FileManager.Models.Services.FileRules
 				{ "Я", "Ya"},
 				{ "ё", "e"},
 				{ "Ё", "E"},
+				{ "\\", "\\"},
 			};
 			return result;
 		}

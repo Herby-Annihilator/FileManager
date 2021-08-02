@@ -8,7 +8,7 @@ namespace FileManager.Models.Services
 {
 	public static class ServicesRegistrator
 	{
-		public static IServiceCollection AddServices(this IServiceCollection services) => services.AddSingleton<FileRuleExecutor>()
+		public static IServiceCollection AddServices(this IServiceCollection services) => services.AddTransient<FileRuleExecutor>()
 		// Register your services here
 		;
 	}
