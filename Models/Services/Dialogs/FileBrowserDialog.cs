@@ -21,6 +21,7 @@ namespace FileManager.Models.Services.Dialogs
 			{
 				SelectedFiles = dialog.FileNames;
 				SelectedPath = SelectedFiles[0].Substring(0, SelectedFiles[0].LastIndexOf("\\") + 1);
+				ParentDirectory = SelectedPath;
 				for (int i = 0; i < SelectedFiles.Length; i++)
 				{
 					SelectedFiles[i] = SelectedFiles[i].Substring(SelectedFiles[i].LastIndexOf("\\") + 1);

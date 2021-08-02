@@ -123,16 +123,6 @@ namespace FileManager.ViewModels
 			}
 		}
 
-		private bool _renameAndReplace = false;
-		public bool RenameAndReplace
-		{
-			get => _renameAndReplace;
-			set
-			{
-				Set(ref _renameAndReplace, value);
-			}
-		}
-
 		private bool _saveRegister = true;
 		public bool SaveRegister
 		{
@@ -189,7 +179,7 @@ namespace FileManager.ViewModels
 		public ICommand ChooseFolderCommand { get; }
 		private void OnChooseFolderCommandExecuted(object p)
 		{
-			IDialog dialog = new FolderBrowserDialog();
+			IDialog dialog = _services.FolderBrowserDialog;
 			if (dialog.ShowDialog() == true)
 			{
 				SelectedFolder = dialog.SelectedPath;
@@ -203,8 +193,58 @@ namespace FileManager.ViewModels
 		public ICommand ApplyToAllCommand { get; }
 		private void OnApplyToAllCommandExecuted(object p)
 		{
-			
-			 
+			try
+			{
+				IRuleExecutor<string> ruleExecutor = ConfigureExecutor();
+				string res;
+				foreach (var name in FilesTable)
+				{
+					try
+					{
+						res = ruleExecutor.Invoke(name.Location + name.Name);
+						File.Move(name.Location + name.Name, res);
+						LogText += $"Файл '{name.Location + name.Name}' переименован в '{res}'\r\n\r\n";
+						name.Location = res.Substring(0, res.LastIndexOf("\\") + 1);
+						name.Name = res.Substring(res.LastIndexOf("\\") + 1);
+					}
+					catch (FileNotFoundException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch(ArgumentNullException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (ArgumentException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (UnauthorizedAccessException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (PathTooLongException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (DirectoryNotFoundException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (NotSupportedException e)
+					{
+						LogError(e.Message + "не критично");
+					}
+					catch (IOException)
+					{
+						throw;
+					}					
+				}				
+			}
+			catch (Exception e)
+			{
+				LogError(e.Message + "FATAL");
+			}
 		}
 		private bool CanApplyToAllCommandExecute(object p) => FilesTable.Count > 0;
 		#endregion
@@ -213,15 +253,22 @@ namespace FileManager.ViewModels
 		public ICommand ApplyToSelectedCommand { get; }
 		private void OnApplyToSelectedCommandExecuted(object p)
 		{
-			IRuleExecutor<string> ruleExecutor = ConfigureExecutor();
-			string res;
-			res = ruleExecutor.Invoke(SelectedFile.Location + SelectedFile.Name);
-			File.Move(SelectedFile.Location + SelectedFile.Name, res);
-			LogText += $"Файл '{SelectedFile.Location + SelectedFile.Name}' переименован в '{res}'\r\n";
-			int index = FilesTable.IndexOf(SelectedFile);
-			SelectedFile = null;
-			FilesTable[index].Location = res.Substring(0, res.LastIndexOf("\\") + 1);
-			FilesTable[index].Name = res.Substring(res.LastIndexOf("\\") + 1);
+			try
+			{
+				IRuleExecutor<string> ruleExecutor = ConfigureExecutor();
+				string res;
+				res = ruleExecutor.Invoke(SelectedFile.Location + SelectedFile.Name);
+				File.Move(SelectedFile.Location + SelectedFile.Name, res);
+				LogText += $"Файл '{SelectedFile.Location + SelectedFile.Name}' переименован в '{res}'\r\n\r\n";
+				int index = FilesTable.IndexOf(SelectedFile);
+				SelectedFile = null;
+				FilesTable[index].Location = res.Substring(0, res.LastIndexOf("\\") + 1);
+				FilesTable[index].Name = res.Substring(res.LastIndexOf("\\") + 1);
+			}
+			catch (Exception e)
+			{
+				LogError(e.Message);
+			}			
 		}
 		private bool CanApplyToSelectedCommandExecute(object p) => SelectedFile != null;
 		#endregion
@@ -232,7 +279,7 @@ namespace FileManager.ViewModels
 		{
 			if (string.IsNullOrWhiteSpace(SelectedFolder))
 			{
-				FileBrowserDialog dialog = new FileBrowserDialog();
+				FileBrowserDialog dialog = _services.FileBrowserDialog;
 				if (dialog.ShowDialog() == true)
 				{
 					FilesTable.Clear();
@@ -333,6 +380,11 @@ namespace FileManager.ViewModels
 			else
 				ruleExecutor.Add(new TranslateRule(PathToTranslateFile));
 			return ruleExecutor;
+		}
+
+		private void LogError(string message)
+		{
+			LogText += $"\r\n\\============Ошибка============/\r\n{message}\r\n\\============Конец ошибки============/";
 		}
 	}
 }

@@ -25,6 +25,7 @@ namespace FileManager.Models.Services.Dialogs
 			if (dialog.ShowDialog() == true)
 			{
 				SelectedPath = dialog.FileName.Substring(0, dialog.FileName.Length - CHOOSE_FOLDER.Length);
+				ParentDirectory = SelectedPath;
 				return true;
 			}
 			return false;

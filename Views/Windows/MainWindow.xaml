@@ -47,8 +47,6 @@
                         <StackPanel Orientation="Horizontal" Margin="0,5">
                             <StackPanel>
                                 <RadioButton Content="Переименовать" IsChecked="{Binding RenameOnly}"/>
-                                <RadioButton Content="Переместить и переименовать" IsChecked="{Binding RenameAndReplace}"/>
-                                <TextBox Text="{Binding PathToAnotherFolder, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" IsEnabled="{Binding RenameAndReplace}"/>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox Content="Ограничить до" IsChecked="{Binding Limit}"/>
                                     <TextBox Text="{Binding LimitLength, UpdateSourceTrigger=PropertyChanged, Converter={cv:IntToStringConverter}}" Width="25" Margin="5,0" IsEnabled="{Binding Limit}"/>
