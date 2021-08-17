@@ -36,7 +36,13 @@ namespace FileManager.Models.Services.Executors
 			directory = param.Substring(0, param.LastIndexOf("\\") + 1);
 			ext = param.Substring(param.LastIndexOf('.'));
 			name = param.Substring(directory.Length, 
-				param.Length - directory.Length - ext.Length);			
+				param.Length - directory.Length - ext.Length);
+			rules.Sort((first, second) =>
+			{
+				if (first.Priority > second.Priority) return 1;
+				if (first.Priority < second.Priority) return -1;
+				return 0;
+			});
 			foreach (var rule in rules)
 			{
 				name = rule.Apply(name);

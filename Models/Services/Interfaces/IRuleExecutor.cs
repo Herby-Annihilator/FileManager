@@ -8,6 +8,6 @@ namespace FileManager.Models.Services.Interfaces
 	{
 		bool Add(IRule<T> rule);
 		bool Remove(IRule<T> rule);
-		T Invoke(T param);
+		T Invoke(T param);		
 	}
 }

@@ -7,6 +7,8 @@ namespace FileManager.Models.Services.FileRules
 {
 	public abstract class FileRule : IRule<string>
 	{
-		public abstract string Apply(string param);
+		public virtual int Priority { get; set; } = FileRuleConstants.MIN_PRIORITY;
+
+		public abstract string Apply(string param);		
 	}
 }
